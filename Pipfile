@@ -9,6 +9,9 @@ uvicorn = {extras = ["standard"], version = "*"}
 alembic = "*"
 asyncpg = "*"
 sqlalchemy = "*"
+pyjwt = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
+psycopg2-binary = "*"
 
 [dev-packages]
 

@@ -2,6 +2,8 @@ version: "3.8"
 
 services:
   fast_api:
+    networks:
+      - main
     env_file:
       - .env
     build:
@@ -19,7 +21,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:
-      - "54321:5432"
+      - "5432:5432"
     networks:
       - main
     env_file:
