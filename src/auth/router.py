@@ -9,7 +9,7 @@ auth_router = APIRouter()
 auth_handler = AuthHandler()
 
 
-@auth_router.post("/register")
+@auth_router.post("/register", tags=["authentication"])
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = await AuthService.user_exists(user.username, db)
     if existing_user:
@@ -24,7 +24,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     return {"detail": "User has been registered successfully"}
 
 
-@auth_router.post("/login")
+@auth_router.post("/login", tags=["authentication"])
 async def login(user: UserLogin, db: Session = Depends(get_db)):
     print(f"pass {user.password}")
     existing_user = await AuthService.user_exists(user.username, db)
