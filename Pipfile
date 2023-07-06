@@ -12,6 +12,8 @@ sqlalchemy = "*"
 pyjwt = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 psycopg2-binary = "*"
+fastapi-cache2 = {extras = ["redis"], version = "*"}
+aioredis = "*"
 
 [dev-packages]
 

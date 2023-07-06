@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
+from redis.client import Redis
 from sqlalchemy.orm import Session
 
+from src.cache.redis_connection import get_redis_client
 from src.db.models import Post
 from src.posts.services import PostService
 from src.schemas.post_schema import PostCreate, PostUpdate, PostContent
 from src.auth.jwt_auth import AuthHandler
 from src.db.database import get_db
+from fastapi_cache.decorator import cache
 
 posts_router = APIRouter()
 
@@ -55,11 +58,10 @@ def get_post(post_id: int, db: Session = Depends(get_db)):
 
 @posts_router.post("/posts/{post_id}/like", tags=["likes"])
 def like_post(
-        post_id: int,
+        post_id_val: int,
         flag: bool,
         db: Session = Depends(get_db),
-        user=Depends(auth_handler.auth_wrapper)
-
+        user=Depends(auth_handler.auth_wrapper),
+        redis: Redis = Depends(get_redis_client),
 ):
-
-    return PostService.like_or_unlike_post(db, post_id, flag, user)
+    return PostService.like_or_unlike_post(db, post_id_val, flag, user, redis)

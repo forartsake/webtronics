@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src.db.models import Post, User, Like
 from src.schemas.post_schema import PostCreate, PostUpdate
+import redis
 
 
 class PostService:
@@ -54,8 +55,8 @@ class PostService:
             raise HTTPException(status_code=500, detail="Failed to update post")
 
     @staticmethod
-    def like_or_unlike_post(db: Session, post_id: int, flag: bool, user_id: int) -> str:
-        post = db.query(Post).filter(Post.id == post_id).first()
+    def like_or_unlike_post(db: Session, post_id_val: int, flag: bool, user_id: int, redis: redis.Redis) -> str:
+        post = db.query(Post).filter(Post.id == post_id_val).first()
 
         if not post:
             raise HTTPException(status_code=404, detail="Post not found")
@@ -65,7 +66,7 @@ class PostService:
 
         existing_like = (
             db.query(Like)
-            .filter(Like.user_id == user_id, Like.post_id == post_id)
+            .filter(Like.user_id == user_id, Like.post_id == post_id_val)
             .first()
         )
 
@@ -73,10 +74,14 @@ class PostService:
             if existing_like:
                 raise HTTPException(status_code=400, detail="You have already liked this post")
 
-            new_like = Like(user_id=user_id, post_id=post_id)
+            new_like = Like(user_id=user_id, post_id=post_id_val)
             db.add(new_like)
             db.commit()
             db.refresh(new_like)
+
+            redis.sadd(f"liked_posts:{user_id}", post_id_val)
+            redis.srem(f"disliked_posts:{user_id}", post_id_val)
+
             return "Post liked successfully"
         else:
             if not existing_like:
@@ -84,4 +89,7 @@ class PostService:
 
             db.delete(existing_like)
             db.commit()
-            return "Post has been deleted successfully"
+
+            redis.srem(f"liked_posts:{user_id}", post_id_val)
+
+            return "Post has been unliked successfully"

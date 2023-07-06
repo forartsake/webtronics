@@ -26,6 +26,16 @@ services:
       - main
     env_file:
       - .env
+  redis:
+    image: redis:alpine
+    container_name: redis-cache
+    restart: on-failure
+    ports:
+      - '6379:6379'
+    volumes:
+      - .:/usr/src/redis-cache
+    networks:
+      - main
 
 networks:
   main:
@@ -33,4 +43,4 @@ networks:
     name: main
 
 volumes:
-    postgres_data:
+  postgres_data:
