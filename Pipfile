@@ -6,6 +6,17 @@ name = "pypi"
 [packages]
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
+alembic = "*"
+asyncpg = "*"
+sqlalchemy = "*"
+pyjwt = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
+psycopg2-binary = "*"
+fastapi-cache2 = {extras = ["redis"], version = "*"}
+aioredis = "*"
+pytest = "*"
+httpx = "*"
+requests = "*"
 
 [dev-packages]
 
